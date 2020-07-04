@@ -1,0 +1,43 @@
+{% extends 'layout.template.html' %}
+
+{% block title %}
+Expenses
+{% endblock %}
+
+{% block content %}
+<h2>Expenses</h2>
+<a class="btn btn-primary" href="{{url_for('show_create_form')}}">New Expense</a>
+<ul class="list-group mt-3">
+{% for e in expenses %}
+    <li class="list-group-item">
+    Expense: {{e.expense_name}} <br>
+    <label for="">reconciled</label>
+    {% if e.reconciled %}
+    <input type="checkbox" class="reconciled-checkbox" data-expense-id="{{e._id}}" checked>
+    {%else%}
+    <input type="checkbox" class="reconciled-checkbox" data-expense-id="{{e._id}}">
+    {% endif %}
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}
+{% block js %}
+<script>
+$(function(){
+    $('.reconciled-checkbox').change(function(){
+        console.log('checkbox clicked')
+        let expense_id = $(this).data('expense-id')
+        let url = "{{url_for('check_expense')}}"
+        axios.patch(url, {
+            'expense_id': expense_id
+        }).then(()=>{
+            if (this.checked) {
+                toastr.success("Item has been marked as reconciled!")
+            } else {
+                toastr.success("Item has been marked as not reconciled!")
+            }
+        })
+    })
+})
+</script>
+{% endblock %}
